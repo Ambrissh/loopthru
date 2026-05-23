@@ -80,46 +80,16 @@
   }
 
   window.addEventListener('message', (event) => {
-    if (event.source !== window) return;
-    if (event.origin !== window.location.origin) return;
+    if (!event.data || event.source !== window) return;
 
-    const type = event.data?.type;
-
-    if (type === 'LOOPTHRU_MSG') {
-      const payload = event.data.payload || {};
-      emitMessage(
-        payload.author,
-        payload.text,
-        payload.messageId || null,
-        payload.guildId || null,
-        payload.channelId || null,
-      );
-      return;
+    if (event.data.type === 'LOOPTHRU_MSG') {
+      if (!isExtensionContextValid()) return;
+      sendDiscordMessageToBackground(event.data.payload);
     }
 
-    if (type === 'LOOPTHRU_GUILD_DATA') {
+    if (event.data.type === 'LOOPTHRU_GUILD_DATA') {
       if (!isExtensionContextValid()) return;
-      try {
-        chrome.runtime.sendMessage(
-          {
-            type: 'GUILD_DATA',
-            payload: event.data.payload,
-          },
-          () => {
-            try {
-              const err = chrome.runtime.lastError;
-              if (!err) return;
-              const msg = err.message || '';
-              if (msg.includes('Extension context invalidated')) return;
-              console.warn('[Signal] sendMessage (guild data):', msg);
-            } catch {
-              /* ignore lastError access after invalidation */
-            }
-          },
-        );
-      } catch {
-        /* Extension context invalidated */
-      }
+      chrome.runtime.sendMessage({ type: 'GUILD_DATA', payload: event.data.payload });
     }
   });
 })();
