@@ -294,10 +294,19 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           if (ch.id && ch.name) channelMap[ch.id] = ch.name;
         });
 
-        servers[payload.guildId] = { name: payload.guildName, channels: channelMap };
-
+        let guildName = payload.guildName || '';
+        if (!guildName) {
+          try {
+            const r = await fetch(`https://discord.com/api/v9/guilds/${payload.guildId}`, { credentials: 'include' });
+            if (r.ok) {
+              const g = await r.json();
+              guildName = g.name || '';
+            }
+          } catch {}
+        }
+        servers[payload.guildId] = { name: guildName || payload.guildId, channels: channelMap };
         await chrome.storage.local.set({ [LEARNED_SERVERS_KEY]: servers });
-        console.log('[Signal] Stored guild data', { guildId: payload.guildId, guildName: payload.guildName, channelCount: Object.keys(channelMap).length });
+        console.log('[Signal] Stored guild data', { guildId: payload.guildId, guildName, channelCount: Object.keys(channelMap).length });
         sendResponse({ ok: true });
       } catch (e) {
         console.error('[Signal] Error storing guild data', e);
