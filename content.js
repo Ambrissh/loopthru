@@ -80,13 +80,14 @@
   }
 
   function getGuildNameFromDOM(guildId) {
-    // Discord renders server names as aria-label on server icon buttons in the sidebar
-    const selector = `[data-list-item-id="guildsnav___${guildId}"]`;
-    const el = document.querySelector(selector);
-    if (el) {
-      return el.getAttribute('aria-label') || el.textContent?.trim() || '';
-    }
-    return '';
+    const el = document.querySelector(`[data-list-item-id="guildsnav___${guildId}"]`);
+    if (!el) return '';
+    const span = el.querySelector('span');
+    if (!span) return '';
+    const text = span.textContent?.trim() || '';
+    // Format is "N mentions, ServerName" or just "ServerName"
+    const parts = text.split(',');
+    return parts[parts.length - 1].trim();
   }
 
   window.addEventListener('message', (event) => {
