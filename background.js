@@ -280,8 +280,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type === 'GUILD_DATA') {
     (async () => {
       try {
-        const { guildId, guildName, channels } = msg.payload || {};
-        if (!guildId) {
+        const payload = msg.payload || {};
+        if (!payload.guildId) {
           sendResponse({ ok: true, skipped: true });
           return;
         }
@@ -289,13 +289,15 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         const stored = await chrome.storage.local.get(LEARNED_SERVERS_KEY);
         const servers = stored[LEARNED_SERVERS_KEY] || {};
 
-        const existing = servers[guildId] || { name: '', channels: {} };
-        existing.name = guildName || existing.name;
-        Object.assign(existing.channels, channels || {});
-        servers[guildId] = existing;
+        const channelMap = {};
+        (payload.channels || []).forEach(ch => {
+          if (ch.id && ch.name) channelMap[ch.id] = ch.name;
+        });
+
+        servers[payload.guildId] = { name: payload.guildName, channels: channelMap };
 
         await chrome.storage.local.set({ [LEARNED_SERVERS_KEY]: servers });
-        console.log('[Signal] Stored guild data', { guildId, guildName, channelCount: Object.keys(channels || {}).length });
+        console.log('[Signal] Stored guild data', { guildId: payload.guildId, guildName: payload.guildName, channelCount: Object.keys(channelMap).length });
         sendResponse({ ok: true });
       } catch (e) {
         console.error('[Signal] Error storing guild data', e);

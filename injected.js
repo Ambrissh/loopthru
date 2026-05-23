@@ -16,21 +16,13 @@
 
   function postGuildData(guild) {
     if (!guild || !guild.id) return;
-    const channels = {};
-    if (Array.isArray(guild.channels)) {
-      for (const ch of guild.channels) {
-        if (ch && ch.id && ch.name) {
-          channels[ch.id] = ch.name;
-        }
-      }
-    }
     window.postMessage(
       {
         type: 'LOOPTHRU_GUILD_DATA',
         payload: {
           guildId: guild.id,
-          guildName: guild.name || null,
-          channels,
+          guildName: guild.name,
+          channels: guild.channels,
         },
       },
       window.location.origin,
