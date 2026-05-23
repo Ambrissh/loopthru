@@ -14,14 +14,33 @@
   let compressedWriteChain = Promise.resolve();
   let decompressedBuffer = '';
 
+  function getGuildNameFromDiscordStore(guildId) {
+    try {
+      const req = window.webpackChunkdiscord_app?.push?.([
+        [Symbol()],
+        {},
+        r => r
+      ]);
+      if (!req) return '';
+      window.webpackChunkdiscord_app?.pop?.();
+      const guildStore = Object.values(req.c || {}).find(m => {
+        try { return m?.exports?.default?.getGuild; } catch { return false; }
+      });
+      return guildStore?.exports?.default?.getGuild?.(guildId)?.name || '';
+    } catch {
+      return '';
+    }
+  }
+
   function postGuildData(guild) {
     if (!guild || !guild.id) return;
+    const guildName = guild.name || getGuildNameFromDiscordStore(guild.id) || '';
     window.postMessage(
       {
         type: 'LOOPTHRU_GUILD_DATA',
         payload: {
           guildId: guild.id,
-          guildName: guild.name,
+          guildName,
           channels: guild.channels,
         },
       },
