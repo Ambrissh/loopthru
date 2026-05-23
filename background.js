@@ -187,10 +187,10 @@ async function processBatch(messages) {
   let notifyCount = 0;
   for (let i = 0; i < messages.length; i += 1) {
     if (!flags[i]) continue;
-    const text = messages[i].text;
+    const { author, text, guildId, channelId } = messages[i];
     const preview = text.length > 180 ? `${text.slice(0, 180)}…` : text;
     const message = preview.trim() || 'Relevant Discord message.';
-    const { serverName, channelName } = await resolveNames(messages[i].guildId, messages[i].channelId);
+    const { serverName, channelName } = await resolveNames(guildId, channelId);
     const title = serverName
       ? `LoopThru · ${serverName} · #${channelName}`
       : 'LoopThru · Discord';
