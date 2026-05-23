@@ -79,6 +79,16 @@
     });
   }
 
+  function getGuildNameFromDOM(guildId) {
+    // Discord renders server names as aria-label on server icon buttons in the sidebar
+    const selector = `[data-list-item-id="guildsnav___${guildId}"]`;
+    const el = document.querySelector(selector);
+    if (el) {
+      return el.getAttribute('aria-label') || el.textContent?.trim() || '';
+    }
+    return '';
+  }
+
   window.addEventListener('message', (event) => {
     if (!event.data || event.source !== window) return;
 
@@ -91,20 +101,11 @@
       if (!isExtensionContextValid()) return;
       const { guildId, channels } = event.data.payload;
       if (!guildId) return;
-      fetch(`https://discord.com/api/v9/guilds/${guildId}`, { credentials: 'include' })
-        .then(r => r.ok ? r.json() : { name: '' })
-        .then(guild => {
-          chrome.runtime.sendMessage({
-            type: 'GUILD_DATA',
-            payload: { guildId, guildName: guild.name || '', channels }
-          });
-        })
-        .catch(() => {
-          chrome.runtime.sendMessage({
-            type: 'GUILD_DATA',
-            payload: { guildId, guildName: '', channels }
-          });
-        });
+      const guildName = getGuildNameFromDOM(guildId);
+      chrome.runtime.sendMessage({
+        type: 'GUILD_DATA',
+        payload: { guildId, guildName, channels }
+      });
     }
   });
 })();
