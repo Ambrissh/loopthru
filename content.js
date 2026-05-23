@@ -89,7 +89,22 @@
 
     if (event.data.type === 'LOOPTHRU_GUILD_DATA') {
       if (!isExtensionContextValid()) return;
-      chrome.runtime.sendMessage({ type: 'GUILD_DATA', payload: event.data.payload });
+      const { guildId, channels } = event.data.payload;
+      if (!guildId) return;
+      fetch(`https://discord.com/api/v9/guilds/${guildId}`, { credentials: 'include' })
+        .then(r => r.ok ? r.json() : { name: '' })
+        .then(guild => {
+          chrome.runtime.sendMessage({
+            type: 'GUILD_DATA',
+            payload: { guildId, guildName: guild.name || '', channels }
+          });
+        })
+        .catch(() => {
+          chrome.runtime.sendMessage({
+            type: 'GUILD_DATA',
+            payload: { guildId, guildName: '', channels }
+          });
+        });
     }
   });
 })();
