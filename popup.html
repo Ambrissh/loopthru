@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signal</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        width: 320px;
+        padding: 16px;
+        font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+        font-size: 13px;
+        color: #e6e6e6;
+        background: #141414;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #fafafa;
+      }
+      p {
+        margin: 0 0 14px;
+        line-height: 1.45;
+        color: #9a9a9a;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #737373;
+      }
+      input[type='password'],
+      textarea {
+        width: 100%;
+        padding: 10px 11px;
+        border-radius: 8px;
+        border: 1px solid #2a2a2a;
+        background: #1c1c1c;
+        color: #f5f5f5;
+        font: inherit;
+        line-height: 1.45;
+      }
+      textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+      input[type='password']:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #404040;
+        box-shadow: 0 0 0 1px #404040;
+      }
+      button {
+        margin-top: 12px;
+        width: 100%;
+        padding: 10px 12px;
+        border: none;
+        border-radius: 8px;
+        background: #f5f5f5;
+        color: #0a0a0a;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #e5e5e5;
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .section {
+        margin-bottom: 18px;
+      }
+      .status {
+        margin-top: 8px;
+        min-height: 18px;
+        font-size: 12px;
+        color: #737373;
+      }
+      .status.ok {
+        color: #86efac;
+      }
+      .status.err {
+        color: #fca5a5;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Signal</h1>
+    <p>Describe what you care about on Discord. You will only get notified when a new message matches.</p>
+
+    <div class="section">
+      <label for="apiKey">Groq API key</label>
+      <input
+        type="password"
+        id="apiKey"
+        placeholder="Enter Groq API key"
+        autocomplete="off"
+      />
+      <button type="button" id="saveKey">Save Key</button>
+      <div id="keyStatus" class="status" aria-live="polite"></div>
+    </div>
+
+    <div class="section">
+      <label for="intent">Your intent</label>
+      <textarea id="intent" placeholder="e.g. Mentions of my project name or hiring leads in #general"></textarea>
+      <button type="button" id="save">Save intent</button>
+      <div id="status" class="status" aria-live="polite"></div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

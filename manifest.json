@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Loopthru",
+  "version": "0.1.0",
+  "description": "AI-filtered Discord notifications based on your intent.",
+  "icons": {
+    "16": "icon128.png",
+    "48": "icon128.png",
+    "128": "icon128.png"
+  },
+  "permissions": ["storage", "notifications"],
+  "host_permissions": [
+    "https://discord.com/*",
+    "https://*.discord.com/*",
+    "https://api.groq.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Signal",
+    "default_icon": {
+      "16": "icon128.png",
+      "48": "icon128.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://discord.com/*", "https://*.discord.com/*"],
+      "js": ["injected.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://discord.com/*", "https://*.discord.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    }
+  ]
+}
