@@ -1,0 +1,9 @@
+.env
+*.env.*
+config.local.js
+secrets.*
+*.key
+*.pem
+node_modules/
+.DS_Store
+*.log
